@@ -25,6 +25,9 @@ Scan infrastructure and detect configuration drift.
 - `-t, --terraform <path>` - Path to Terraform directory or file
 - `--format <format>` - Output format (text, json)
 - `--severity <level>` - Minimum severity to report (low, medium, high, critical)
+- `--no-history` - Skip saving scan results to history
+- `--history-dir <path>` - Directory for storing drift history (default: ./drift-history)
+- `--show-comparison` - Show comparison with previous scan
 
 **Examples:**
 
@@ -46,6 +49,15 @@ drift-detector scan --severity high
 
 # Use custom configuration file
 drift-detector scan --config ./my-config.yml
+
+# Compare with previous scan
+drift-detector scan --show-comparison
+
+# Don't save to history
+drift-detector scan --no-history
+
+# Use custom history directory
+drift-detector scan --history-dir /path/to/history
 ```
 
 ---
@@ -137,6 +149,47 @@ drift-detector watch --terraform ./prod-infrastructure
 
 # Only alert on critical and high severity
 drift-detector watch --severity high --interval 15
+```
+
+---
+
+### `drift-detector history`
+
+View and analyze drift detection history.
+
+**Options:**
+- `--dir <path>` - Directory for drift history (default: ./drift-history)
+- `--list` - List recent scans
+- `--stats` - Show statistics
+- `--scan <id>` - Show details for specific scan
+- `--limit <number>` - Number of scans to show (default: 10)
+- `--provider <provider>` - Filter by provider
+- `--export <path>` - Export history to JSON file
+- `--clear` - Clear all history
+
+**Examples:**
+
+```bash
+# List recent scans
+drift-detector history --list
+
+# Show statistics
+drift-detector history --stats
+
+# View specific scan details
+drift-detector history --scan scan_1234567890_abcdef
+
+# Limit results
+drift-detector history --list --limit 5
+
+# Filter by provider
+drift-detector history --provider aws
+
+# Export history
+drift-detector history --export backup.json
+
+# Use custom history directory
+drift-detector history --dir /path/to/history --stats
 ```
 
 ---
