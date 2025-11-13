@@ -115,6 +115,15 @@ drift-detector remediate --dry-run
 drift-detector remediate --no-dry-run --auto-approve
 ```
 
+### 5️⃣ Web Dashboard
+
+```bash
+# Start the dashboard server
+drift-detector dashboard
+
+# Open http://localhost:3000 in your browser
+```
+
 ---
 
 ## 💻 CLI Commands
@@ -128,6 +137,7 @@ drift-detector remediate --no-dry-run --auto-approve
 | `watch` | Continuous monitoring mode |
 | `remediate` | Auto-fix detected drift |
 | `pulumi` | Scan Pulumi projects |
+| `dashboard` | Start web dashboard server |
 
 **Full CLI documentation**: [CLI-USAGE.md](./CLI-USAGE.md)
 
@@ -202,7 +212,7 @@ src/
 
 <div align="center">
 
-### 🎉 **56% Complete** (9 of 16 features)
+### 🎉 **63% Complete** (10 of 16 features)
 
 | Status | Feature | Priority |
 |--------|---------|----------|
@@ -215,7 +225,7 @@ src/
 | ✅ | Auto-Remediation Engine | MEDIUM |
 | ✅ | Pulumi Support | MEDIUM |
 | ✅ | State Management | MEDIUM |
-| 🔜 | Web Dashboard | LOW |
+| ✅ | Web Dashboard | LOW |
 | 🔜 | ML-Based Detection | LOW |
 | 🔜 | CI/CD Integrations | LOW |
 
