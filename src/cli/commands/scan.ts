@@ -28,6 +28,11 @@ export function createScanCommand(): Command {
     .option('-p, --provider <provider>', 'Cloud provider (aws, azure, gcp)', 'aws')
     .option('-r, --region <region>', 'Cloud provider region', 'us-east-1')
     .option('-t, --terraform <path>', 'Path to Terraform directory or file')
+    .option('--state <path>', 'Path to Terraform state file')
+    .option('--state-backend <type>', 'Remote state backend type (s3, azurerm, gcs)')
+    .option('--state-bucket <name>', 'S3 bucket name for remote state')
+    .option('--state-key <key>', 'S3 key or blob path for remote state')
+    .option('--use-state-as-source', 'Use state file as the source of truth instead of IaC')
     .option('--format <format>', 'Output format (text, json)', 'text')
     .option('--severity <level>', 'Minimum severity to report (low, medium, high, critical)', 'low')
     .option('--no-history', 'Skip saving scan results to history')
@@ -59,12 +64,66 @@ export function createScanCommand(): Command {
           process.exit(1);
         }
 
-        // Parse Terraform files
+        // Handle state file if provided
+        let stateResources: any[] | null = null;
+        if (options.state || options.stateBackend) {
+          const { StateManager } = await import('../../state');
+          const stateManager = new StateManager();
+          const stateSpinner = Output.spinner('Loading Terraform state...').start();
+
+          try {
+            let state;
+            if (options.state) {
+              // Local state file
+              state = await stateManager.loadLocalState(options.state);
+              stateSpinner.succeed(`Loaded state from ${options.state}`);
+            } else if (options.stateBackend === 's3') {
+              // S3 remote state
+              if (!options.stateBucket || !options.stateKey) {
+                stateSpinner.fail('S3 backend requires --state-bucket and --state-key');
+                process.exit(1);
+              }
+              state = await stateManager.loadRemoteState({
+                type: 's3',
+                config: {
+                  bucket: options.stateBucket,
+                  key: options.stateKey,
+                  region: options.region,
+                },
+              });
+              stateSpinner.succeed(`Loaded state from S3: s3://${options.stateBucket}/${options.stateKey}`);
+            }
+
+            if (state) {
+              const summary = stateManager.getStateSummary(state);
+              Output.info(`State version: ${state.terraform_version}, Resources: ${summary.resourceCount}`);
+              
+              if (options.useStateAsSource) {
+                // Use state as the expected configuration instead of IaC
+                const parser = await import('../../state/parser');
+                const stateParser = new parser.TerraformStateParser();
+                stateResources = stateParser.extractResources(state);
+                Output.info('Using state file as source of truth');
+              }
+            }
+          } catch (error: any) {
+            stateSpinner.fail('Failed to load state file');
+            Output.error(error.message);
+            process.exit(1);
+          }
+        }
+
+        // Parse Terraform files (unless using state as source)
         const terraformPath = options.terraform || config.terraform?.directories?.[0] || './infrastructure';
-        const parseSpinner = Output.spinner(`Parsing Terraform configuration from ${terraformPath}...`).start();
+        let expectedResources;
         
-        const parser = new TerraformParser();
-        let iacDefinitions;
+        if (stateResources) {
+          expectedResources = stateResources;
+        } else {
+          const parseSpinner = Output.spinner(`Parsing Terraform configuration from ${terraformPath}...`).start();
+          
+          const parser = new TerraformParser();
+          let iacDefinitions;
 
         try {
           if (terraformPath.endsWith('.tf')) {
@@ -73,17 +132,20 @@ export function createScanCommand(): Command {
             iacDefinitions = parser.parseDirectory(terraformPath);
           }
           
-          const totalResources = iacDefinitions.reduce((sum, def) => sum + def.resources.length, 0);
-          parseSpinner.succeed(`Parsed ${totalResources} resources from Terraform`);
-        } catch (error: any) {
-          parseSpinner.fail('Failed to parse Terraform configuration');
-          if (error.code === 'ENOENT') {
-            Output.warning(`Terraform path not found: ${terraformPath}`);
-            Output.info('Use --terraform flag to specify the correct path');
-          } else {
-            Output.error('Parse error:', error);
+            const totalResources = iacDefinitions.reduce((sum, def) => sum + def.resources.length, 0);
+            parseSpinner.succeed(`Parsed ${totalResources} resources from Terraform`);
+          } catch (error: any) {
+            parseSpinner.fail('Failed to parse Terraform configuration');
+            if (error.code === 'ENOENT') {
+              Output.warning(`Terraform path not found: ${terraformPath}`);
+              Output.info('Use --terraform flag to specify the correct path');
+            } else {
+              Output.error('Parse error:', error);
+            }
+            process.exit(1);
           }
-          process.exit(1);
+
+          expectedResources = iacDefinitions.flatMap(def => def.resources);
         }
 
         // Scan cloud resources
@@ -104,7 +166,6 @@ export function createScanCommand(): Command {
 
         // Detect drift
         const driftSpinner = Output.spinner('Detecting drift...').start();
-        const expectedResources = iacDefinitions.flatMap(def => def.resources);
         
         const detector = new DriftDetector({
           providers: [provider as any],
