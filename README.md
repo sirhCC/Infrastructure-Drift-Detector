@@ -15,6 +15,7 @@ Infrastructure Drift Detector compares your actual cloud resources against Infra
 - **Historical Tracking**: Store and analyze drift history over time
 - **Rich CLI**: Scan, compare, report, watch, and query drift history
 - **Multiple Report Formats**: HTML, CSV, JSON, and Markdown
+- **Notification System**: Slack, Email, Teams, Discord, and custom webhooks
 - **TypeScript**: Fully typed for better developer experience
 
 ## 📦 Installation

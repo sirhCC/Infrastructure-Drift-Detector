@@ -5,6 +5,16 @@ import { AWSScanner } from '../../scanners/aws/index';
 import { DriftDetector } from '../../detector';
 import { Output } from '../output';
 import { DriftHistoryStore } from '../../reporting';
+import { NotificationManager } from '../../notifications';
+import { 
+  NotificationConfig as NotificationManagerConfig,
+  NotificationChannelConfig,
+  SlackConfig,
+  EmailConfig,
+  TeamsConfig,
+  DiscordConfig,
+  WebhookConfig,
+} from '../../notifications/types';
 
 /**
  * Scan command - detect drift in infrastructure
@@ -138,6 +148,37 @@ export function createScanCommand(): Command {
           });
 
           Output.info(`Scan saved to history (ID: ${scanId})`);
+
+          // Send notifications
+          if (config.notifications?.enabled) {
+            const notifySpinner = Output.spinner('Sending notifications...').start();
+            try {
+              const notificationConfig = convertToNotificationConfig(config.notifications);
+              const notificationManager = new NotificationManager(notificationConfig);
+              
+              const notificationResults = await notificationManager.notify(driftResults, {
+                provider,
+                region: options.region,
+                totalResources: actualResources.length,
+                scanDuration,
+                scanId,
+              });
+
+              const successful = notificationResults.filter(r => r.success).length;
+              const failed = notificationResults.filter(r => !r.success).length;
+
+              if (failed === 0) {
+                notifySpinner.succeed(`Notifications sent to ${successful} channel(s)`);
+              } else {
+                notifySpinner.warn(`Notifications sent: ${successful} succeeded, ${failed} failed`);
+                notificationResults.filter(r => !r.success).forEach(result => {
+                  Output.error(`  ${result.channel}: ${result.error}`);
+                });
+              }
+            } catch (error: any) {
+              notifySpinner.fail(`Failed to send notifications: ${error.message}`);
+            }
+          }
         }
 
         // Filter by severity
@@ -234,4 +275,84 @@ export function createScanCommand(): Command {
     });
 
   return command;
+}
+
+/**
+ * Convert config notification format to NotificationManager format
+ */
+function convertToNotificationConfig(configNotif: any): NotificationManagerConfig {
+    const channels: NotificationChannelConfig[] = [];
+
+    if (configNotif.channels?.slack) {
+      channels.push({
+        type: 'slack',
+        enabled: true,
+        config: {
+          webhookUrl: configNotif.channels.slack.webhookUrl,
+          channel: configNotif.channels.slack.channel,
+          username: configNotif.channels.slack.username,
+          iconEmoji: configNotif.channels.slack.iconEmoji,
+        } as SlackConfig,
+      });
+    }
+
+    if (configNotif.channels?.email) {
+      channels.push({
+        type: 'email',
+        enabled: true,
+        config: {
+          host: configNotif.channels.email.smtp.host,
+          port: configNotif.channels.email.smtp.port,
+          secure: configNotif.channels.email.smtp.secure,
+          auth: configNotif.channels.email.smtp.auth,
+          from: configNotif.channels.email.from,
+          to: configNotif.channels.email.to,
+          cc: configNotif.channels.email.cc,
+          subject: configNotif.channels.email.subject,
+        } as EmailConfig,
+      });
+    }
+
+    if (configNotif.channels?.teams) {
+      channels.push({
+        type: 'teams',
+        enabled: true,
+        config: {
+          webhookUrl: configNotif.channels.teams.webhookUrl,
+        } as TeamsConfig,
+      });
+    }
+
+    if (configNotif.channels?.discord) {
+      channels.push({
+        type: 'discord',
+        enabled: true,
+        config: {
+          webhookUrl: configNotif.channels.discord.webhookUrl,
+          username: configNotif.channels.discord.username,
+          avatarUrl: configNotif.channels.discord.avatarUrl,
+        } as DiscordConfig,
+      });
+    }
+
+    if (configNotif.channels?.webhook) {
+      channels.push({
+        type: 'webhook',
+        enabled: true,
+        config: {
+          url: configNotif.channels.webhook.url,
+          method: configNotif.channels.webhook.method,
+          headers: configNotif.channels.webhook.headers,
+          authentication: configNotif.channels.webhook.authentication,
+        } as WebhookConfig,
+      });
+    }
+
+    return {
+      enabled: configNotif.enabled,
+      channels,
+      severityFilter: configNotif.filters?.severityFilter,
+      minDriftPercentage: configNotif.filters?.minDriftPercentage,
+      onlyOnNewDrift: configNotif.filters?.onlyOnNewDrift,
+    };
 }

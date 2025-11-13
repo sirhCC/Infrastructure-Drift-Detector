@@ -11,6 +11,8 @@ export type ResourceType =
   | 'database' 
   | 'security';
 
+export type Severity = 'low' | 'medium' | 'high' | 'critical';
+
 export interface Resource {
   id: string;
   type: ResourceType;
@@ -26,7 +28,7 @@ export interface DriftResult {
   hasDrift: boolean;
   driftedProperties: DriftedProperty[];
   detectedAt: Date;
-  severity: 'low' | 'medium' | 'high' | 'critical';
+  severity: Severity;
 }
 
 export interface DriftedProperty {

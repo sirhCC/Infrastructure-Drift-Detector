@@ -67,6 +67,7 @@ export interface NotificationConfig {
       webhookUrl: string;
       channel?: string;
       username?: string;
+      iconEmoji?: string;
     };
     email?: {
       smtp: {
@@ -80,15 +81,35 @@ export interface NotificationConfig {
       };
       from: string;
       to: string[];
+      cc?: string[];
+      subject?: string;
+    };
+    teams?: {
+      webhookUrl: string;
+    };
+    discord?: {
+      webhookUrl: string;
+      username?: string;
+      avatarUrl?: string;
     };
     webhook?: {
       url: string;
       method?: 'POST' | 'PUT';
       headers?: Record<string, string>;
+      authentication?: {
+        type: 'bearer' | 'basic' | 'api-key';
+        token?: string;
+        username?: string;
+        password?: string;
+        headerName?: string;
+      };
     };
   };
   filters?: {
     minSeverity?: 'low' | 'medium' | 'high' | 'critical';
+    severityFilter?: ('low' | 'medium' | 'high' | 'critical')[];
+    minDriftPercentage?: number;
+    onlyOnNewDrift?: boolean;
     resources?: string[];
   };
 }
