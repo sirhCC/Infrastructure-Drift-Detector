@@ -40,8 +40,8 @@ jobs:
       - name: Build project
         run: npm run build
   
-  auto-approve:
-    name: Auto-approve Dependabot PRs
+  dependabot-info:
+    name: Dependabot PR Info
     runs-on: ubuntu-latest
     needs: test
     if: github.event.pull_request.user.login == 'dependabot[bot]'
@@ -53,7 +53,7 @@ jobs:
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
       
-      - name: Auto-approve for patch and minor updates
+      - name: Comment on safe updates
         if: |
           steps.metadata.outputs.update-type == 'version-update:semver-patch' || 
           steps.metadata.outputs.update-type == 'version-update:semver-minor'
@@ -61,10 +61,13 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            await github.rest.pulls.createReview({
+            const updateType = '${{ steps.metadata.outputs.update-type }}';
+            const dependencyName = '${{ steps.metadata.outputs.dependency-names }}';
+            const message = `✅ **CI Passed - Safe to merge**\n\nThis is a \`${updateType}\` update for **${dependencyName}**.\n\nAll tests have passed successfully on Node.js 18.x and 20.x.\n\n**Status**: Ready for review and merge 🚀`;
+            
+            await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              pull_number: context.payload.pull_request.number,
-              event: 'APPROVE',
-              body: '✅ Auto-approved by CI: This is a `${{ steps.metadata.outputs.update-type }}` update and has passed all tests.'
+              issue_number: context.payload.pull_request.number,
+              body: message
             })
