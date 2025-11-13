@@ -22,11 +22,11 @@
 - [x] Handle data sources vs resources ✅
 
 ### 3. Configuration System
-- [ ] YAML/JSON config file support
-- [ ] Environment variable configuration
-- [ ] Credential management (AWS profiles, service principals)
-- [ ] Scan schedule configuration
-- [ ] Resource filtering and exclusion rules
+- [x] YAML/JSON config file support ✅
+- [x] Environment variable configuration ✅
+- [x] Credential management (AWS profiles, service principals) ✅
+- [x] Scan schedule configuration ✅
+- [x] Resource filtering and exclusion rules ✅
 
 ### 4. CLI Tool
 - [ ] `drift-detector scan` - Run drift detection
