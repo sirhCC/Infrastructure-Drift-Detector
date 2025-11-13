@@ -13,9 +13,6 @@ updates:
       - "sirhCC"
     assignees:
       - "sirhCC"
-    labels:
-      - "dependencies"
-      - "npm"
     commit-message:
       prefix: "chore(deps)"
     
@@ -27,8 +24,5 @@ updates:
     open-pull-requests-limit: 5
     reviewers:
       - "sirhCC"
-    labels:
-      - "dependencies"
-      - "github-actions"
     commit-message:
       prefix: "chore(ci)"
