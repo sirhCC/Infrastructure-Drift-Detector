@@ -9,12 +9,12 @@ Infrastructure Drift Detector compares your actual cloud resources against Infra
 ## 🚀 Features
 
 - **Multi-Cloud Support**: AWS, Azure, and GCP
-- **IaC Parser**: Terraform support with variables, modules, and advanced features
+- **IaC Parsers**: Terraform and Pulumi support (TypeScript, Python, YAML)
 - **Drift Detection**: Identifies added, removed, and modified properties
 - **Severity Classification**: Automatic severity rating (low/medium/high/critical)
 - **Auto-Remediation**: Automatically fix drift with approval workflows and rollback
 - **Historical Tracking**: Store and analyze drift history over time
-- **Rich CLI**: Scan, compare, report, watch, remediate, and query history
+- **Rich CLI**: Scan, compare, report, watch, remediate, pulumi, and query history
 - **Multiple Report Formats**: HTML, CSV, JSON, and Markdown
 - **Notification System**: Slack, Email, Teams, Discord, and custom webhooks
 - **Dependabot**: Automated dependency updates and security monitoring
@@ -88,7 +88,11 @@ npm run dev
 
 ### Scan for Drift
 ```bash
+# Terraform
 drift-detector scan --terraform ./terraform --config drift-detector.yml
+
+# Pulumi
+drift-detector pulumi --dir ./pulumi-project --stack dev
 ```
 
 ### Remediate Drift (Dry-Run)
@@ -115,6 +119,7 @@ drift-detector report --format csv
 
 ## 📖 Documentation
 
+- [Pulumi Support](./PULUMI-SUPPORT.md) - Pulumi integration guide
 - [Auto-Remediation Guide](./AUTO-REMEDIATION.md) - Complete remediation documentation
 - [Notification System](./NOTIFICATION-SYSTEM.md) - Setup notifications
 - [CLI Usage](./CLI-USAGE.md) - All CLI commands
