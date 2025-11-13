@@ -1,0 +1,49 @@
+{
+  "version": "1.0.0",
+  "name": "infrastructure-drift-detector-azdo",
+  "publisher": "infrastructure-tools",
+  "description": "Azure DevOps extension for Infrastructure Drift Detection",
+  "categories": ["Azure Pipelines"],
+  "targets": [
+    {
+      "id": "Microsoft.VisualStudio.Services"
+    }
+  ],
+  "contributions": [
+    {
+      "id": "drift-scan-task",
+      "type": "ms.vss-distributed-task.task",
+      "targets": ["ms.vss-distributed-task.tasks"],
+      "properties": {
+        "name": "tasks/DriftScan"
+      }
+    },
+    {
+      "id": "drift-analyze-task",
+      "type": "ms.vss-distributed-task.task",
+      "targets": ["ms.vss-distributed-task.tasks"],
+      "properties": {
+        "name": "tasks/DriftAnalyze"
+      }
+    },
+    {
+      "id": "drift-remediate-task",
+      "type": "ms.vss-distributed-task.task",
+      "targets": ["ms.vss-distributed-task.tasks"],
+      "properties": {
+        "name": "tasks/DriftRemediate"
+      }
+    }
+  ],
+  "files": [
+    {
+      "path": "tasks/DriftScan"
+    },
+    {
+      "path": "tasks/DriftAnalyze"
+    },
+    {
+      "path": "tasks/DriftRemediate"
+    }
+  ]
+}
