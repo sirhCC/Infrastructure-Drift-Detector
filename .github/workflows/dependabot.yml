@@ -53,17 +53,25 @@ jobs:
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
       
-      - name: Comment on safe updates
-        if: |
-          steps.metadata.outputs.update-type == 'version-update:semver-patch' || 
-          steps.metadata.outputs.update-type == 'version-update:semver-minor'
+      - name: Comment on PR
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const updateType = '${{ steps.metadata.outputs.update-type }}';
             const dependencyName = '${{ steps.metadata.outputs.dependency-names }}';
-            const message = `✅ **CI Passed - Safe to merge**\n\nThis is a \`${updateType}\` update for **${dependencyName}**.\n\nAll tests have passed successfully on Node.js 18.x and 20.x.\n\n**Status**: Ready for review and merge 🚀`;
+            
+            let emoji = '✅';
+            let status = 'Ready for review';
+            let note = 'All tests have passed successfully on Node.js 18.x and 20.x.';
+            
+            if (updateType === 'version-update:semver-major') {
+              emoji = '⚠️';
+              status = 'Requires careful review';
+              note = 'This is a major version update that may contain breaking changes. Please review the changelog carefully.';
+            }
+            
+            const message = `${emoji} **CI Passed - ${status}**\n\nThis is a \`${updateType}\` update for **${dependencyName}**.\n\n${note}\n\n**Note**: Manual review and approval required.`;
             
             await github.rest.issues.createComment({
               owner: context.repo.owner,
