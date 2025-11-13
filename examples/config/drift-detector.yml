@@ -1,0 +1,187 @@
+# Infrastructure Drift Detector Configuration
+# Complete example with all available options
+
+version: "1.0"
+
+# Cloud Provider Configuration
+providers:
+  # AWS Configuration
+  aws:
+    enabled: true
+    region: us-east-1
+    # Optional: Specify multiple regions to scan
+    regions:
+      - us-east-1
+      - us-west-2
+    
+    # Credentials (optional - will use AWS credential chain if not specified)
+    credentials:
+      profile: default
+      # Or use access keys (not recommended for production)
+      # accessKeyId: YOUR_ACCESS_KEY
+      # secretAccessKey: YOUR_SECRET_KEY
+    
+    # Resource filtering
+    resources:
+      include:
+        - aws_instance
+        - aws_s3_bucket
+        - aws_vpc
+        - aws_security_group
+        - aws_db_instance
+      # exclude:
+      #   - aws_cloudwatch_*
+
+  # Azure Configuration
+  azure:
+    enabled: false
+    subscriptionId: YOUR_SUBSCRIPTION_ID
+    tenantId: YOUR_TENANT_ID
+    
+    credentials:
+      clientId: YOUR_CLIENT_ID
+      clientSecret: YOUR_CLIENT_SECRET
+
+  # GCP Configuration
+  gcp:
+    enabled: false
+    projectId: YOUR_PROJECT_ID
+    
+    credentials:
+      serviceAccountKey: /path/to/service-account-key.json
+
+# Terraform Configuration
+terraform:
+  directories:
+    - ./infrastructure
+    - ./terraform
+  
+  # Optional: Specific files to parse
+  files:
+    - ./main.tf
+  
+  # Optional: Variable files
+  varFiles:
+    - ./terraform.tfvars
+    - ./prod.tfvars
+  
+  # Optional: State backend configuration
+  stateBackend:
+    type: s3
+    config:
+      bucket: my-terraform-state
+      key: infrastructure/terraform.tfstate
+      region: us-east-1
+
+# Scanning Configuration
+scan:
+  # Scan interval in minutes (0 = run once)
+  interval: 60
+  
+  # Or use cron expression
+  # schedule: "0 */6 * * *"  # Every 6 hours
+  
+  # Run scanners in parallel
+  parallel: true
+  
+  # Timeout per scanner in seconds
+  timeout: 300
+  
+  # Number of retry attempts on failure
+  retryAttempts: 3
+
+# Drift Detection Configuration
+drift:
+  # Properties to ignore during drift detection
+  ignoreProperties:
+    - last_modified
+    - created_at
+    - updated_at
+    - launch_time
+    - status
+    - arn
+  
+  # Resources to ignore completely
+  ignoreResources:
+    - aws_cloudwatch_log_group.temporary_*
+    - data.*
+  
+  # Thresholds for alerts
+  thresholds:
+    maxDriftPercentage: 20
+    maxDriftedResources: 10
+
+# Notification Configuration
+notifications:
+  enabled: true
+  
+  channels:
+    # Slack notifications
+    slack:
+      webhookUrl: https://hooks.slack.com/services/YOUR/WEBHOOK/URL
+      channel: "#infrastructure-alerts"
+      username: Drift Detector Bot
+    
+    # Email notifications
+    # email:
+    #   smtp:
+    #     host: smtp.gmail.com
+    #     port: 587
+    #     secure: false
+    #     auth:
+    #       user: your-email@gmail.com
+    #       pass: your-app-password
+    #   from: drift-detector@yourcompany.com
+    #   to:
+    #     - devops@yourcompany.com
+    #     - infrastructure@yourcompany.com
+    
+    # Custom webhook
+    # webhook:
+    #   url: https://your-webhook-endpoint.com/drift
+    #   method: POST
+    #   headers:
+    #     Authorization: Bearer YOUR_TOKEN
+  
+  # Notification filters
+  filters:
+    minSeverity: medium
+    # resources:
+    #   - aws_instance.*
+    #   - aws_db_instance.*
+
+# Reporting Configuration
+reporting:
+  outputDir: ./reports
+  
+  formats:
+    - json
+    - html
+    - csv
+  
+  includeTimestamp: true
+  
+  # Report retention in days
+  retention: 30
+
+# Auto-Remediation Configuration
+remediation:
+  enabled: false
+  
+  # Auto-apply fixes (dangerous!)
+  autoApply: false
+  
+  # Dry run mode (show what would be fixed)
+  dryRun: true
+  
+  # Require manual approval before applying
+  requireApproval: true
+  
+  # Backup Terraform state before remediation
+  backupState: true
+
+# Logging Configuration
+logging:
+  level: info  # debug, info, warn, error
+  file: ./logs/drift-detector.log
+  console: true

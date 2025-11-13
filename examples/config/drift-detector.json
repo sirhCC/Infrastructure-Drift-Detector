@@ -1,0 +1,64 @@
+{
+  "version": "1.0",
+  "providers": {
+    "aws": {
+      "enabled": true,
+      "region": "us-east-1",
+      "credentials": {
+        "profile": "default"
+      }
+    }
+  },
+  "terraform": {
+    "directories": [
+      "./infrastructure"
+    ]
+  },
+  "scan": {
+    "interval": 60,
+    "parallel": true,
+    "timeout": 300,
+    "retryAttempts": 3
+  },
+  "drift": {
+    "ignoreProperties": [
+      "last_modified",
+      "created_at",
+      "updated_at",
+      "launch_time",
+      "status"
+    ]
+  },
+  "notifications": {
+    "enabled": true,
+    "channels": {
+      "slack": {
+        "webhookUrl": "https://hooks.slack.com/services/YOUR/WEBHOOK/URL",
+        "channel": "#infrastructure-alerts"
+      }
+    },
+    "filters": {
+      "minSeverity": "medium"
+    }
+  },
+  "reporting": {
+    "outputDir": "./reports",
+    "formats": [
+      "json",
+      "html"
+    ],
+    "includeTimestamp": true,
+    "retention": 30
+  },
+  "remediation": {
+    "enabled": false,
+    "autoApply": false,
+    "dryRun": true,
+    "requireApproval": true,
+    "backupState": true
+  },
+  "logging": {
+    "level": "info",
+    "console": true
+  }
+}
