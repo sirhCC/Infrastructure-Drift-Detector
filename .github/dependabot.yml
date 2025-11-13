@@ -1,0 +1,58 @@
+# Dependabot configuration for Infrastructure Drift Detector
+# https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
+version: 2
+updates:
+  # Enable version updates for npm dependencies
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/New_York"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "sirhCC"
+    assignees:
+      - "sirhCC"
+    labels:
+      - "dependencies"
+      - "npm"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+    # Group minor and patch updates together
+    groups:
+      development-dependencies:
+        dependency-type: "development"
+        update-types:
+          - "minor"
+          - "patch"
+      production-dependencies:
+        dependency-type: "production"
+        update-types:
+          - "minor"
+          - "patch"
+    # Ignore specific dependencies if needed
+    ignore:
+      # Example: ignore major version updates for specific packages
+      # - dependency-name: "chalk"
+      #   update-types: ["version-update:semver-major"]
+    # Allow both direct and indirect dependencies
+    versioning-strategy: auto
+    
+  # Enable security updates for GitHub Actions (if you add workflows later)
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "sirhCC"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    commit-message:
+      prefix: "chore(ci)"
