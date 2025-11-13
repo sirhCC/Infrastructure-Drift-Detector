@@ -1,0 +1,235 @@
+trigger:
+  branches:
+    include:
+      - main
+      - develop
+  paths:
+    include:
+      - infrastructure/*
+
+pr:
+  branches:
+    include:
+      - main
+
+schedules:
+  - cron: "0 2 * * *"
+    displayName: Daily drift detection
+    branches:
+      include:
+        - main
+    always: true
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  - name: projectName
+    value: 'default'
+  - name: terraformPath
+    value: './infrastructure'
+  - name: nodeVersion
+    value: '20.x'
+
+stages:
+  - stage: DriftDetection
+    displayName: 'Drift Detection Scan'
+    jobs:
+      - job: Scan
+        displayName: 'Scan Infrastructure'
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: '$(nodeVersion)'
+            displayName: 'Install Node.js'
+
+          - script: |
+              npm ci
+              npm run build
+            displayName: 'Install dependencies'
+
+          - task: AzureCLI@2
+            condition: eq(variables['provider'], 'azure')
+            inputs:
+              azureSubscription: '$(azureServiceConnection)'
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                export AZURE_CLIENT_ID=$(servicePrincipalId)
+                export AZURE_CLIENT_SECRET=$(servicePrincipalKey)
+                export AZURE_TENANT_ID=$(tenantId)
+                export AZURE_SUBSCRIPTION_ID=$(subscriptionId)
+            displayName: 'Configure Azure credentials'
+
+          - task: AWSCLI@1
+            condition: eq(variables['provider'], 'aws')
+            inputs:
+              awsCredentials: '$(awsServiceConnection)'
+              regionName: '$(awsRegion)'
+            displayName: 'Configure AWS credentials'
+
+          - script: |
+              npx ts-node src/cli/index.ts scan \
+                --project "$(projectName)" \
+                --terraform "$(terraformPath)" \
+                --output drift-report.json \
+                --format json
+            displayName: 'Run drift scan'
+
+          - task: PublishBuildArtifacts@1
+            inputs:
+              PathtoPublish: 'drift-report.json'
+              ArtifactName: 'drift-reports'
+            displayName: 'Publish drift report'
+
+          - script: |
+              DRIFT_COUNT=$(jq '.summary.drifted' drift-report.json)
+              CRITICAL_COUNT=$(jq '.summary.critical' drift-report.json)
+              
+              echo "##vso[task.setvariable variable=driftCount;isOutput=true]$DRIFT_COUNT"
+              echo "##vso[task.setvariable variable=criticalCount;isOutput=true]$CRITICAL_COUNT"
+              
+              if [ "$DRIFT_COUNT" -gt 0 ]; then
+                echo "##vso[task.setvariable variable=driftDetected;isOutput=true]true"
+              else
+                echo "##vso[task.setvariable variable=driftDetected;isOutput=true]false"
+              fi
+            name: scanResults
+            displayName: 'Extract scan results'
+
+  - stage: Analysis
+    displayName: 'Advanced Analysis'
+    dependsOn: DriftDetection
+    condition: eq(dependencies.DriftDetection.outputs['Scan.scanResults.driftDetected'], 'true')
+    jobs:
+      - job: SecurityAnalysis
+        displayName: 'Security Analysis'
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: '$(nodeVersion)'
+
+          - script: npm ci && npm run build
+            displayName: 'Setup'
+
+          - script: |
+              npx ts-node src/cli/index.ts analyze \
+                --project "$(projectName)" \
+                --security \
+                --output security-report.json
+            displayName: 'Run security analysis'
+
+          - task: PublishBuildArtifacts@1
+            inputs:
+              PathtoPublish: 'security-report.json'
+              ArtifactName: 'security-reports'
+
+      - job: CostAnalysis
+        displayName: 'Cost Impact Analysis'
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: '$(nodeVersion)'
+
+          - script: npm ci && npm run build
+            displayName: 'Setup'
+
+          - script: |
+              npx ts-node src/cli/index.ts analyze \
+                --project "$(projectName)" \
+                --cost \
+                --output cost-report.json
+            displayName: 'Run cost analysis'
+
+          - task: PublishBuildArtifacts@1
+            inputs:
+              PathtoPublish: 'cost-report.json'
+              ArtifactName: 'cost-reports'
+
+      - job: ComplianceCheck
+        displayName: 'Compliance Check (CIS)'
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: '$(nodeVersion)'
+
+          - script: npm ci && npm run build
+            displayName: 'Setup'
+
+          - script: |
+              npx ts-node src/cli/index.ts analyze \
+                --project "$(projectName)" \
+                --compliance CIS \
+                --output compliance-report.json
+            displayName: 'Run compliance check'
+
+          - task: PublishBuildArtifacts@1
+            inputs:
+              PathtoPublish: 'compliance-report.json'
+              ArtifactName: 'compliance-reports'
+
+  - stage: Reporting
+    displayName: 'Generate Reports'
+    dependsOn: Analysis
+    jobs:
+      - job: GenerateReports
+        displayName: 'Generate HTML Report'
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: '$(nodeVersion)'
+
+          - script: npm ci && npm run build
+            displayName: 'Setup'
+
+          - script: |
+              npx ts-node src/cli/index.ts report \
+                --project "$(projectName)" \
+                --format html \
+                --output drift-report.html
+            displayName: 'Generate HTML report'
+
+          - task: PublishBuildArtifacts@1
+            inputs:
+              PathtoPublish: 'drift-report.html'
+              ArtifactName: 'html-reports'
+
+          - task: PublishPipelineArtifact@1
+            inputs:
+              targetPath: 'drift-report.html'
+              artifactName: 'DriftReport'
+            displayName: 'Publish pipeline artifact'
+
+  - stage: Remediation
+    displayName: 'Auto-Remediation'
+    dependsOn: DriftDetection
+    condition: and(succeeded(), eq(dependencies.DriftDetection.outputs['Scan.scanResults.driftDetected'], 'true'), eq(variables['runRemediation'], 'true'))
+    jobs:
+      - job: RemediateDrift
+        displayName: 'Remediate Drift'
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: '$(nodeVersion)'
+
+          - script: npm ci && npm run build
+            displayName: 'Setup'
+
+          - task: ManualValidation@0
+            inputs:
+              notifyUsers: '$(approvers)'
+              instructions: 'Please review drift report and approve remediation'
+            displayName: 'Manual approval'
+
+          - script: |
+              npx ts-node src/cli/index.ts remediate \
+                --project "$(projectName)" \
+                --terraform "$(terraformPath)" \
+                --auto-approve \
+                --output remediation-result.json
+            displayName: 'Run remediation'
+
+          - task: PublishBuildArtifacts@1
+            inputs:
+              PathtoPublish: 'remediation-result.json'
+              ArtifactName: 'remediation-results'
