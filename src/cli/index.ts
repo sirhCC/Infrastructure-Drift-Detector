@@ -10,6 +10,7 @@ import { remediateCommand } from './commands/remediate';
 import { pulumiCommand } from './commands/pulumi';
 import { createDashboardCommand } from './commands/dashboard';
 import { createAnalyzeCommand } from './commands/analyze';
+import { createTerraformCloudCommand } from './commands/terraform-cloud';
 import chalk from 'chalk';
 
 const program = new Command();
@@ -39,6 +40,7 @@ program.addCommand(remediateCommand);
 program.addCommand(pulumiCommand);
 program.addCommand(createDashboardCommand());
 program.addCommand(createAnalyzeCommand());
+program.addCommand(createTerraformCloudCommand());
 
 // Init command
 program
