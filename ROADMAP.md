@@ -15,11 +15,11 @@
   - Use Google Cloud SDK
 
 ### 2. Enhanced Terraform Parser
-- [ ] Support for nested blocks (ingress/egress rules, etc.)
-- [ ] Handle Terraform variables and locals
-- [ ] Parse count and for_each meta-arguments
-- [ ] Support modules and module calls
-- [ ] Handle data sources vs resources
+- [x] Support for nested blocks (ingress/egress rules, etc.) ✅
+- [x] Handle Terraform variables and locals ✅
+- [x] Parse count and for_each meta-arguments ✅
+- [x] Support modules and module calls ✅
+- [x] Handle data sources vs resources ✅
 
 ### 3. Configuration System
 - [ ] YAML/JSON config file support
