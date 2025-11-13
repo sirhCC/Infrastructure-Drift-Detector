@@ -132,7 +132,29 @@ export interface RemediationConfig {
   autoApply?: boolean;
   dryRun?: boolean;
   requireApproval?: boolean;
+  autoApproveForSeverity?: ('safe' | 'low_risk' | 'medium_risk' | 'high_risk' | 'critical')[];
   backupState?: boolean;
+  rollbackOnError?: boolean;
+  terraform?: {
+    binaryPath?: string;
+    workingDirectory?: string;
+    varFile?: string;
+  };
+  execution?: {
+    maxConcurrent?: number;
+    continueOnError?: boolean;
+    timeout?: number; // seconds
+  };
+  filters?: {
+    includeResources?: string[];
+    excludeResources?: string[];
+    maxActionsPerRun?: number;
+    allowDestructive?: boolean;
+  };
+  logging?: {
+    directory?: string;
+    verbose?: boolean;
+  };
 }
 
 /**
@@ -217,7 +239,20 @@ export const DEFAULT_CONFIG: Partial<DriftDetectorConfig> = {
     autoApply: false,
     dryRun: true,
     requireApproval: true,
-    backupState: true
+    autoApproveForSeverity: ['safe'],
+    backupState: true,
+    rollbackOnError: true,
+    execution: {
+      maxConcurrent: 1,
+      continueOnError: false,
+      timeout: 600
+    },
+    filters: {
+      allowDestructive: false
+    },
+    logging: {
+      verbose: true
+    }
   },
   logging: {
     level: 'info',

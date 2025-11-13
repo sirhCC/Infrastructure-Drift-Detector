@@ -6,6 +6,7 @@ import { createCompareCommand } from './commands/compare';
 import { createReportCommand } from './commands/report';
 import { createWatchCommand } from './commands/watch';
 import { createHistoryCommand } from './commands/history';
+import { remediateCommand } from './commands/remediate';
 import chalk from 'chalk';
 
 const program = new Command();
@@ -31,6 +32,7 @@ program.addCommand(createCompareCommand());
 program.addCommand(createReportCommand());
 program.addCommand(createWatchCommand());
 program.addCommand(createHistoryCommand());
+program.addCommand(remediateCommand);
 
 // Init command
 program
