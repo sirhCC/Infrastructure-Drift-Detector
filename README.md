@@ -97,10 +97,9 @@ npm run dev
 
 MIT
 
-## 👤 Author
+
 
 **sirhCC**
 
 ---
 
-Built with TypeScript and ❤️
