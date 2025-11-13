@@ -84,10 +84,10 @@
 ### 10. Web Dashboard
 - [x] React/Next.js frontend ✅
 - [x] Real-time drift visualization ✅
-- [ ] Resource dependency graph (placeholder)
-- [ ] Historical trend charts (placeholder)
+- [x] Resource dependency graph ✅
+- [x] Historical trend charts ✅
 - [x] Multi-project support ✅
-- [ ] User authentication
+- [x] User authentication ✅
 
 ### 11. Advanced Detection
 - [ ] Machine learning for anomaly detection
