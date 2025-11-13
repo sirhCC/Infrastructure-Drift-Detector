@@ -1,0 +1,29 @@
+version: '1.0'
+scan:
+  interval: 120
+  parallel: true
+  timeout: 300
+  retryAttempts: 3
+drift:
+  ignoreProperties:
+    - last_modified
+    - created_at
+    - updated_at
+    - launch_time
+    - status
+reporting:
+  outputDir: ./reports
+  formats:
+    - json
+  includeTimestamp: true
+  retention: 30
+remediation:
+  enabled: false
+  autoApply: false
+  dryRun: true
+  requireApproval: true
+  backupState: true
+logging:
+  level: info
+  console: true
+providers: {}
