@@ -17,6 +17,7 @@ Infrastructure Drift Detector compares your actual cloud resources against Infra
 - **Rich CLI**: Scan, compare, report, watch, remediate, and query history
 - **Multiple Report Formats**: HTML, CSV, JSON, and Markdown
 - **Notification System**: Slack, Email, Teams, Discord, and custom webhooks
+- **Dependabot**: Automated dependency updates and security monitoring
 - **TypeScript**: Fully typed for better developer experience
 
 ## 📦 Installation
@@ -117,6 +118,7 @@ drift-detector report --format csv
 - [Auto-Remediation Guide](./AUTO-REMEDIATION.md) - Complete remediation documentation
 - [Notification System](./NOTIFICATION-SYSTEM.md) - Setup notifications
 - [CLI Usage](./CLI-USAGE.md) - All CLI commands
+- [Dependabot Setup](./.github/DEPENDABOT.md) - Automated dependency updates
 - [Roadmap](./ROADMAP.md) - Feature roadmap
 
 ## 🎯 Progress
