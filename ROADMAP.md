@@ -29,11 +29,11 @@
 - [x] Resource filtering and exclusion rules ✅
 
 ### 4. CLI Tool
-- [ ] `drift-detector scan` - Run drift detection
-- [ ] `drift-detector compare` - Compare specific resources
-- [ ] `drift-detector report` - Generate drift reports
-- [ ] `drift-detector watch` - Continuous monitoring mode
-- [ ] Progress indicators and colored output
+- [x] `drift-detector scan` - Run drift detection ✅
+- [x] `drift-detector compare` - Compare specific resources ✅
+- [x] `drift-detector report` - Generate drift reports ✅
+- [x] `drift-detector watch` - Continuous monitoring mode ✅
+- [x] Progress indicators and colored output ✅
 
 ---
 
