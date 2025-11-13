@@ -8,9 +8,6 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-      day: "monday"
-      time: "09:00"
-      timezone: "America/New_York"
     open-pull-requests-limit: 10
     reviewers:
       - "sirhCC"
@@ -21,33 +18,12 @@ updates:
       - "npm"
     commit-message:
       prefix: "chore(deps)"
-      include: "scope"
-    # Group minor and patch updates together
-    groups:
-      development-dependencies:
-        dependency-type: "development"
-        update-types:
-          - "minor"
-          - "patch"
-      production-dependencies:
-        dependency-type: "production"
-        update-types:
-          - "minor"
-          - "patch"
-    # Ignore specific dependencies if needed
-    ignore:
-      # Example: ignore major version updates for specific packages
-      # - dependency-name: "chalk"
-      #   update-types: ["version-update:semver-major"]
-    # Allow both direct and indirect dependencies
-    versioning-strategy: auto
     
-  # Enable security updates for GitHub Actions (if you add workflows later)
+  # Enable security updates for GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
-      day: "monday"
     open-pull-requests-limit: 5
     reviewers:
       - "sirhCC"
