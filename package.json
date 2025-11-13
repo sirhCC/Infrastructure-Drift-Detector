@@ -19,6 +19,9 @@
   ],
   "author": "sirhCC",
   "license": "MIT",
+  "bin": {
+    "drift-detector": "./dist/cli/index.js"
+  },
   "devDependencies": {
     "@types/node": "^20.10.0",
     "@types/js-yaml": "^4.0.9",
@@ -32,6 +35,9 @@
     "@aws-sdk/client-s3": "^3.478.0",
     "@aws-sdk/client-rds": "^3.478.0",
     "js-yaml": "^4.1.0",
-    "dotenv": "^16.3.1"
+    "dotenv": "^16.3.1",
+    "commander": "^11.1.0",
+    "chalk": "^4.1.2",
+    "ora": "^5.4.1"
   }
 }
