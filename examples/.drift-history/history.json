@@ -1,0 +1,81 @@
+[
+  {
+    "id": "scan_1763064406630_apdmkul2n",
+    "timestamp": "2025-11-13T20:06:46.630Z",
+    "provider": "aws",
+    "region": "us-east-1",
+    "totalResources": 10,
+    "driftedResources": 1,
+    "severityCounts": {
+      "critical": 0,
+      "high": 1,
+      "medium": 0,
+      "low": 0
+    },
+    "results": [
+      {
+        "resourceId": "i-1234567890abcdef0",
+        "resourceName": "web-server-prod",
+        "hasDrift": true,
+        "severity": "high",
+        "driftedProperties": [
+          {
+            "propertyPath": "tags.Environment",
+            "expectedValue": "production",
+            "actualValue": "prod",
+            "changeType": "modified"
+          }
+        ],
+        "detectedAt": "2025-11-13T20:06:46.630Z"
+      },
+      {
+        "resourceId": "i-0987654321fedcba0",
+        "resourceName": "db-server-prod",
+        "hasDrift": false,
+        "severity": "low",
+        "driftedProperties": [],
+        "detectedAt": "2025-11-13T20:06:46.630Z"
+      }
+    ],
+    "metadata": {
+      "terraformPath": "./infrastructure",
+      "scanDuration": 5000
+    }
+  },
+  {
+    "id": "scan_1763064406632_33jl3qhur",
+    "timestamp": "2025-11-13T20:06:46.632Z",
+    "provider": "aws",
+    "region": "us-east-1",
+    "totalResources": 10,
+    "driftedResources": 0,
+    "severityCounts": {
+      "critical": 0,
+      "high": 0,
+      "medium": 0,
+      "low": 0
+    },
+    "results": [
+      {
+        "resourceId": "i-1234567890abcdef0",
+        "resourceName": "web-server-prod",
+        "hasDrift": false,
+        "severity": "low",
+        "driftedProperties": [],
+        "detectedAt": "2025-11-13T20:06:46.632Z"
+      },
+      {
+        "resourceId": "i-0987654321fedcba0",
+        "resourceName": "db-server-prod",
+        "hasDrift": false,
+        "severity": "low",
+        "driftedProperties": [],
+        "detectedAt": "2025-11-13T20:06:46.632Z"
+      }
+    ],
+    "metadata": {
+      "terraformPath": "./infrastructure",
+      "scanDuration": 4800
+    }
+  }
+]
