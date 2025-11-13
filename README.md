@@ -217,6 +217,8 @@ src/
 | Status | Feature | Priority |
 |--------|---------|----------|
 | ✅ | AWS Scanner | HIGH |
+| ✅ | Azure Scanner | HIGH |
+| ✅ | GCP Scanner | HIGH |
 | ✅ | Enhanced Terraform Parser | HIGH |
 | ✅ | Configuration System | HIGH |
 | ✅ | CLI Tool | HIGH |
