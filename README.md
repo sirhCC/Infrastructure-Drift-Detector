@@ -12,8 +12,9 @@ Infrastructure Drift Detector compares your actual cloud resources against Infra
 - **IaC Parser**: Terraform support with variables, modules, and advanced features
 - **Drift Detection**: Identifies added, removed, and modified properties
 - **Severity Classification**: Automatic severity rating (low/medium/high/critical)
+- **Auto-Remediation**: Automatically fix drift with approval workflows and rollback
 - **Historical Tracking**: Store and analyze drift history over time
-- **Rich CLI**: Scan, compare, report, watch, and query drift history
+- **Rich CLI**: Scan, compare, report, watch, remediate, and query history
 - **Multiple Report Formats**: HTML, CSV, JSON, and Markdown
 - **Notification System**: Slack, Email, Teams, Discord, and custom webhooks
 - **TypeScript**: Fully typed for better developer experience
@@ -82,17 +83,54 @@ Watch mode for development:
 npm run dev
 ```
 
-## 📝 Roadmap
+## 📝 Commands
 
-- [ ] AWS resource scanner integration
-- [ ] Azure resource scanner integration
-- [ ] GCP resource scanner integration
-- [ ] Auto-remediation engine
-- [ ] Notification system (Slack, email, webhooks)
-- [ ] Web dashboard
-- [ ] CLI tool
-- [ ] Pulumi parser
-- [ ] Drift history tracking
+### Scan for Drift
+```bash
+drift-detector scan --terraform ./terraform --config drift-detector.yml
+```
+
+### Remediate Drift (Dry-Run)
+```bash
+drift-detector remediate --dry-run
+```
+
+### Remediate Drift (Apply)
+```bash
+drift-detector remediate --no-dry-run --auto-approve
+```
+
+### View History
+```bash
+drift-detector history --list
+drift-detector history --stats
+```
+
+### Generate Reports
+```bash
+drift-detector report --format html
+drift-detector report --format csv
+```
+
+## 📖 Documentation
+
+- [Auto-Remediation Guide](./AUTO-REMEDIATION.md) - Complete remediation documentation
+- [Notification System](./NOTIFICATION-SYSTEM.md) - Setup notifications
+- [CLI Usage](./CLI-USAGE.md) - All CLI commands
+- [Roadmap](./ROADMAP.md) - Feature roadmap
+
+## 🎯 Progress
+
+**Completed Features (7/16 - 44%)**:
+- ✅ AWS Scanner
+- ✅ Enhanced Terraform Parser
+- ✅ Configuration System
+- ✅ CLI Tool
+- ✅ Drift Reporting & History
+- ✅ Notification System
+- ✅ Auto-Remediation Engine
+
+See [ROADMAP.md](./ROADMAP.md) for detailed progress.
 
 ## 📄 License
 
