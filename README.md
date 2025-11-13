@@ -9,9 +9,12 @@ Infrastructure Drift Detector compares your actual cloud resources against Infra
 ## 🚀 Features
 
 - **Multi-Cloud Support**: AWS, Azure, and GCP
-- **IaC Parser**: Terraform support (Pulumi coming soon)
+- **IaC Parser**: Terraform support with variables, modules, and advanced features
 - **Drift Detection**: Identifies added, removed, and modified properties
 - **Severity Classification**: Automatic severity rating (low/medium/high/critical)
+- **Historical Tracking**: Store and analyze drift history over time
+- **Rich CLI**: Scan, compare, report, watch, and query drift history
+- **Multiple Report Formats**: HTML, CSV, JSON, and Markdown
 - **TypeScript**: Fully typed for better developer experience
 
 ## 📦 Installation
