@@ -1,0 +1,4 @@
+name: pulumi-python-example
+runtime: python
+description: Example Pulumi Python project for drift detection
+main: __main__.py

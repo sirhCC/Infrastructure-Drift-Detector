@@ -1,0 +1,97 @@
+name: pulumi-yaml-example
+runtime: yaml
+description: Example Pulumi YAML project for drift detection
+
+resources:
+  # VPC
+  app-vpc:
+    type: aws:ec2/vpc:Vpc
+    properties:
+      cidrBlock: 10.0.0.0/16
+      enableDnsHostnames: true
+      enableDnsSupport: true
+      tags:
+        Name: dev-vpc
+        Environment: dev
+
+  # Subnet
+  app-subnet:
+    type: aws:ec2/subnet:Subnet
+    properties:
+      vpcId: ${app-vpc.id}
+      cidrBlock: 10.0.1.0/24
+      availabilityZone: us-east-1a
+      tags:
+        Name: dev-subnet
+        Environment: dev
+
+  # Security Group
+  app-sg:
+    type: aws:ec2/securityGroup:SecurityGroup
+    properties:
+      vpcId: ${app-vpc.id}
+      description: Allow HTTP and SSH traffic
+      ingress:
+        - protocol: tcp
+          fromPort: 80
+          toPort: 80
+          cidrBlocks:
+            - 0.0.0.0/0
+          description: Allow HTTP
+        - protocol: tcp
+          fromPort: 22
+          toPort: 22
+          cidrBlocks:
+            - 0.0.0.0/0
+          description: Allow SSH
+      egress:
+        - protocol: -1
+          fromPort: 0
+          toPort: 0
+          cidrBlocks:
+            - 0.0.0.0/0
+          description: Allow all outbound
+      tags:
+        Name: dev-sg
+        Environment: dev
+
+  # S3 Bucket
+  app-bucket:
+    type: aws:s3/bucket:Bucket
+    properties:
+      acl: private
+      versioning:
+        enabled: true
+      serverSideEncryptionConfiguration:
+        rule:
+          applyServerSideEncryptionByDefault:
+            sseAlgorithm: AES256
+      tags:
+        Name: dev-bucket
+        Environment: dev
+
+  # EC2 Instance
+  web-server:
+    type: aws:ec2/instance:Instance
+    properties:
+      ami: ami-0c55b159cbfafe1f0
+      instanceType: t3.micro
+      subnetId: ${app-subnet.id}
+      vpcSecurityGroupIds:
+        - ${app-sg.id}
+      tags:
+        Name: dev-web-server
+        Environment: dev
+        Role: web
+    options:
+      dependsOn:
+        - ${app-subnet}
+        - ${app-sg}
+
+outputs:
+  vpcId: ${app-vpc.id}
+  subnetId: ${app-subnet.id}
+  securityGroupId: ${app-sg.id}
+  bucketName: ${app-bucket.id}
+  instanceId: ${web-server.id}
+  instancePublicIp: ${web-server.publicIp}

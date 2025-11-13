@@ -1,0 +1,4 @@
+config:
+  aws:region: us-east-1
+  pulumi-typescript-example:environment: dev
+  pulumi-typescript-example:instanceType: t3.micro

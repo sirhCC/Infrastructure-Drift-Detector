@@ -1,0 +1,4 @@
+name: pulumi-typescript-example
+runtime: nodejs
+description: Example Pulumi TypeScript project for drift detection
+main: index.ts
