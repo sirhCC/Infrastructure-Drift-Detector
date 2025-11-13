@@ -30,14 +30,15 @@ async function exampleSlackNotification() {
     {
       resourceId: 'i-1234567890abcdef0',
       resourceName: 'web-server-prod',
+      resourceType: 'aws_instance',
       hasDrift: true,
       driftedProperties: [
         {
           propertyPath: 'instance_type',
-          expectedValue: 't3.medium',
-          actualValue: 't3.large',
-          changeType: 'modified',
-        },
+          expectedValue: 't2.micro',
+          actualValue: 't2.small',
+          changeType: 'modified'
+        }
       ],
       detectedAt: new Date(),
       severity: 'high',
@@ -84,15 +85,16 @@ async function exampleEmailNotification() {
   const driftResults: DriftResult[] = [
     {
       resourceId: 'bucket-production-data',
-      resourceName: 'production-data-bucket',
+      resourceName: 'prod-data-bucket',
+      resourceType: 'aws_s3_bucket',
       hasDrift: true,
       driftedProperties: [
         {
           propertyPath: 'versioning.enabled',
           expectedValue: true,
           actualValue: false,
-          changeType: 'modified',
-        },
+          changeType: 'modified'
+        }
       ],
       detectedAt: new Date(),
       severity: 'critical',
@@ -158,6 +160,7 @@ async function exampleMultipleChannels() {
     {
       resourceId: 'sg-0123456789',
       resourceName: 'production-security-group',
+      resourceType: 'aws_security_group',
       hasDrift: true,
       driftedProperties: [
         {

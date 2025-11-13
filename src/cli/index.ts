@@ -9,6 +9,7 @@ import { createHistoryCommand } from './commands/history';
 import { remediateCommand } from './commands/remediate';
 import { pulumiCommand } from './commands/pulumi';
 import { createDashboardCommand } from './commands/dashboard';
+import { createAnalyzeCommand } from './commands/analyze';
 import chalk from 'chalk';
 
 const program = new Command();
@@ -37,6 +38,7 @@ program.addCommand(createHistoryCommand());
 program.addCommand(remediateCommand);
 program.addCommand(pulumiCommand);
 program.addCommand(createDashboardCommand());
+program.addCommand(createAnalyzeCommand());
 
 // Init command
 program

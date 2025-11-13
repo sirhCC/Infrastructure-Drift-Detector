@@ -20,6 +20,7 @@ async function demonstrateHistory() {
     {
       resourceId: 'i-1234567890abcdef0',
       resourceName: 'web-server-prod',
+      resourceType: 'aws_instance',
       hasDrift: true,
       severity: 'high',
       driftedProperties: [
@@ -34,7 +35,8 @@ async function demonstrateHistory() {
     },
     {
       resourceId: 'i-0987654321fedcba0',
-      resourceName: 'db-server-prod',
+      resourceName: 'db-server-1',
+      resourceType: 'aws_instance',
       hasDrift: false,
       severity: 'low',
       driftedProperties: [],
@@ -68,6 +70,7 @@ async function demonstrateHistory() {
     {
       resourceId: 'i-1234567890abcdef0',
       resourceName: 'web-server-prod',
+      resourceType: 'aws_instance',
       hasDrift: false,
       severity: 'low',
       driftedProperties: [],
@@ -76,6 +79,7 @@ async function demonstrateHistory() {
     {
       resourceId: 'i-0987654321fedcba0',
       resourceName: 'db-server-prod',
+      resourceType: 'aws_instance',
       hasDrift: false,
       severity: 'low',
       driftedProperties: [],

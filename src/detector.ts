@@ -34,6 +34,7 @@ export class DriftDetector {
         results.push({
           resourceId: expectedResource.id,
           resourceName: expectedResource.name,
+          resourceType: expectedResource.type,
           hasDrift: true,
           driftedProperties: driftedProps,
           detectedAt: new Date(),
@@ -96,6 +97,7 @@ export class DriftDetector {
     return {
       resourceId: resource.id,
       resourceName: resource.name,
+      resourceType: resource.type,
       hasDrift: true,
       driftedProperties: [{
         propertyPath: '_resource',
