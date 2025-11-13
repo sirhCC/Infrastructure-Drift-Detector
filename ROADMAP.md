@@ -97,11 +97,11 @@
 - [x] Compliance checking (CIS, PCI-DSS) ✅
 
 ### 12. Integration & Automation
-- [ ] GitHub Actions workflow
-- [ ] GitLab CI/CD integration
-- [ ] Jenkins plugin
-- [ ] Azure DevOps extension
-- [ ] Terraform Cloud/Enterprise integration
+- [x] GitHub Actions workflow ✅
+- [x] GitLab CI/CD integration ✅
+- [x] Jenkins plugin ✅
+- [x] Azure DevOps extension ✅
+- [x] Terraform Cloud/Enterprise integration ✅
 
 ### 13. Multi-Provider Features
 - [ ] Cross-cloud resource comparison
