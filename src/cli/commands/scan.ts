@@ -4,6 +4,7 @@ import { TerraformParser } from '../../parsers/terraform-enhanced';
 import { AWSScanner } from '../../scanners/aws/index';
 import { DriftDetector } from '../../detector';
 import { Output } from '../output';
+import { DriftHistoryStore } from '../../reporting';
 
 /**
  * Scan command - detect drift in infrastructure
@@ -19,7 +20,11 @@ export function createScanCommand(): Command {
     .option('-t, --terraform <path>', 'Path to Terraform directory or file')
     .option('--format <format>', 'Output format (text, json)', 'text')
     .option('--severity <level>', 'Minimum severity to report (low, medium, high, critical)', 'low')
+    .option('--no-history', 'Skip saving scan results to history')
+    .option('--history-dir <path>', 'Directory for storing drift history', './drift-history')
+    .option('--show-comparison', 'Show comparison with previous scan')
     .action(async (options) => {
+      const scanStartTime = Date.now();
       try {
         Output.header('Infrastructure Drift Detection');
 
@@ -99,6 +104,42 @@ export function createScanCommand(): Command {
         const driftResults = detector.detectDrift(expectedResources, actualResources);
         driftSpinner.succeed('Drift detection complete');
 
+        // Initialize history store
+        const historyStore = new DriftHistoryStore(options.historyDir);
+        
+        // Compare with previous scan if requested
+        let comparison = null;
+        if (options.showComparison) {
+          comparison = historyStore.compareWithPrevious(driftResults);
+        }
+
+        // Save to history (unless disabled)
+        if (options.history !== false) {
+          const scanDuration = Date.now() - scanStartTime;
+          const severityCounts = {
+            critical: driftResults.filter(r => r.hasDrift && r.severity === 'critical').length,
+            high: driftResults.filter(r => r.hasDrift && r.severity === 'high').length,
+            medium: driftResults.filter(r => r.hasDrift && r.severity === 'medium').length,
+            low: driftResults.filter(r => r.hasDrift && r.severity === 'low').length
+          };
+
+          const scanId = historyStore.addScan({
+            provider,
+            region: options.region,
+            totalResources: actualResources.length,
+            driftedResources: driftResults.filter(r => r.hasDrift).length,
+            severityCounts,
+            results: driftResults,
+            metadata: {
+              terraformPath,
+              configFile: options.config,
+              scanDuration
+            }
+          });
+
+          Output.info(`Scan saved to history (ID: ${scanId})`);
+        }
+
         // Filter by severity
         const minSeverity = options.severity;
         const severityOrder = ['low', 'medium', 'high', 'critical'];
@@ -109,6 +150,32 @@ export function createScanCommand(): Command {
           const resultIndex = severityOrder.indexOf(result.severity);
           return resultIndex >= minIndex;
         });
+
+        // Display comparison if available
+        if (comparison) {
+          Output.header('Comparison with Previous Scan');
+          console.log();
+          Output.info(`New drift: ${comparison.new.length}`);
+          Output.success(`Fixed drift: ${comparison.fixed.length}`);
+          Output.warning(`Ongoing drift: ${comparison.ongoing.length}`);
+          console.log();
+
+          if (comparison.new.length > 0) {
+            Output.warning('Newly detected drift:');
+            comparison.new.forEach(result => {
+              console.log(`  • ${result.resourceId}`);
+            });
+            console.log();
+          }
+
+          if (comparison.fixed.length > 0) {
+            Output.success('Fixed drift:');
+            comparison.fixed.forEach(result => {
+              console.log(`  • ${result.resourceId}`);
+            });
+            console.log();
+          }
+        }
 
         // Display results
         Output.header('Drift Detection Results');

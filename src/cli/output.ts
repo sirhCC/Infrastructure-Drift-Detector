@@ -7,6 +7,20 @@ import * as ora from 'ora';
 export class Output {
   
   /**
+   * Chalk colors for custom styling
+   */
+  static colors = {
+    red: chalk.red,
+    green: chalk.green,
+    yellow: chalk.yellow,
+    blue: chalk.blue,
+    cyan: chalk.cyan,
+    gray: chalk.gray,
+    dim: chalk.dim,
+    bold: chalk.bold
+  };
+  
+  /**
    * Print success message
    */
   static success(message: string): void {
