@@ -7,7 +7,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-18%20%7C%2020-green?style=flat-square&logo=node.js)](https://nodejs.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
-[![Progress](https://img.shields.io/badge/Progress-56%25-orange?style=flat-square)](ROADMAP.md)
+[![Progress](https://img.shields.io/badge/Progress-87%25-brightgreen?style=flat-square)](ROADMAP.md)
 
 **Monitor • Detect • Remediate** configuration drift across AWS, Azure, and GCP
 
@@ -47,6 +47,10 @@
 - **Severity Classification**: Low/Medium/High/Critical
 - **Three-Way Comparison**: IaC ↔ State ↔ Cloud
 - **Custom Ignore Rules**: Filter noise
+- **ML Anomaly Detection**: Predict drift patterns
+- **Security Scanning**: Policy violation detection
+- **Cost Analysis**: Financial impact of drift
+- **Compliance**: CIS, PCI-DSS validation
 
 </td>
 <td width="50%">
@@ -56,12 +60,14 @@
 - **Approval Workflows**: Multi-reviewer support
 - **Rollback**: Automatic failure recovery
 - **Scheduled Scans**: Watch mode for monitoring
+- **CI/CD**: GitHub Actions, GitLab CI, Jenkins, Azure DevOps
 
 ### 📊 Reporting & Notifications
 - **Formats**: HTML, CSV, JSON, Markdown
 - **History**: Store and query past scans
 - **Alerts**: Slack, Teams, Discord, Email, Webhooks
-- **Rich CLI**: 8+ commands for all workflows
+- **Rich CLI**: 12+ commands for all workflows
+- **Web Dashboard**: Real-time visualization & analytics
 
 </td>
 </tr>
@@ -138,6 +144,9 @@ drift-detector dashboard
 | `remediate` | Auto-fix detected drift |
 | `pulumi` | Scan Pulumi projects |
 | `dashboard` | Start web dashboard server |
+| `analyze` | Advanced analysis (anomalies, security, cost, compliance) |
+| `terraform-cloud` | Terraform Cloud/Enterprise integration |
+| `multi-cloud` | Cross-cloud comparison and multi-account scanning |
 
 **Full CLI documentation**: [CLI-USAGE.md](./CLI-USAGE.md)
 
@@ -184,13 +193,19 @@ driftResults.forEach(result => {
 src/
 ├── cli/              # CLI commands and output
 ├── config/           # Configuration system
+├── detection/        # Advanced detection (ML, security, cost, compliance)
 ├── detector.ts       # Core drift detection engine
+├── integrations/     # Terraform Cloud, CI/CD platforms
+├── multi-cloud/      # Cross-cloud comparison, multi-account scanning
 ├── notifications/    # Alert integrations
 ├── parsers/          # IaC parsers (Terraform, Pulumi)
 ├── reporting/        # History and report generation
-├── scanners/         # Cloud provider scanners (AWS)
+├── scanners/         # Cloud provider scanners (AWS, Azure, GCP)
 ├── state/            # Terraform state management
 └── types.ts          # TypeScript definitions
+
+web/                  # Next.js web dashboard
+tests/                # Jest unit tests
 ```
 
 ---
@@ -212,24 +227,26 @@ src/
 
 <div align="center">
 
-### 🎉 **63% Complete** (10 of 16 features)
+### 🎉 **87% Complete** (14 of 16 features)
 
 | Status | Feature | Priority |
 |--------|---------|----------|
-| ✅ | AWS Scanner | HIGH |
-| ✅ | Azure Scanner | HIGH |
-| ✅ | GCP Scanner | HIGH |
+| ✅ | Cloud Provider Integrations (AWS, Azure, GCP) | HIGH |
 | ✅ | Enhanced Terraform Parser | HIGH |
 | ✅ | Configuration System | HIGH |
-| ✅ | CLI Tool | HIGH |
+| ✅ | CLI Tool (12 commands) | HIGH |
 | ✅ | Drift Reporting & History | MEDIUM |
-| ✅ | Notification System | MEDIUM |
+| ✅ | Notification System (Slack, Teams, Discord, Email) | MEDIUM |
 | ✅ | Auto-Remediation Engine | MEDIUM |
-| ✅ | Pulumi Support | MEDIUM |
-| ✅ | State Management | MEDIUM |
-| ✅ | Web Dashboard | LOW |
-| 🔜 | ML-Based Detection | LOW |
-| 🔜 | CI/CD Integrations | LOW |
+| ✅ | Pulumi Support (TypeScript, Python, YAML) | MEDIUM |
+| ✅ | State Management (S3, Azure, GCS) | MEDIUM |
+| ✅ | Web Dashboard (React/Next.js) | LOW |
+| ✅ | Advanced Detection (ML, Security, Cost, Compliance) | LOW |
+| ✅ | Integration & Automation (GitHub Actions, GitLab, Jenkins, Azure DevOps, Terraform Cloud) | LOW |
+| ✅ | Multi-Provider Features (Cross-cloud, Multi-account, Org scanning, Tag grouping) | LOW |
+| ✅ | Documentation & Testing (Unit tests, Jest) | LOW |
+| 🔜 | Performance & Scalability | LOW |
+| 🔜 | Additional IaC Tools (CloudFormation, ARM, CDK) | LOW |
 
 See [ROADMAP.md](./ROADMAP.md) for detailed progress and upcoming features.
 
