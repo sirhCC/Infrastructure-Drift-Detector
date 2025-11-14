@@ -11,6 +11,7 @@ import { pulumiCommand } from './commands/pulumi';
 import { createDashboardCommand } from './commands/dashboard';
 import { createAnalyzeCommand } from './commands/analyze';
 import { createTerraformCloudCommand } from './commands/terraform-cloud';
+import { createMultiCloudCommand } from './commands/multi-cloud';
 import chalk from 'chalk';
 
 const program = new Command();
@@ -41,6 +42,7 @@ program.addCommand(pulumiCommand);
 program.addCommand(createDashboardCommand());
 program.addCommand(createAnalyzeCommand());
 program.addCommand(createTerraformCloudCommand());
+program.addCommand(createMultiCloudCommand());
 
 // Init command
 program
